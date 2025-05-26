@@ -15,7 +15,7 @@ void ler_config_do_registry(EstadoJogo* estado) {
     DWORD tamanho = sizeof(DWORD);
     LONG resultado;
 
-    resultado = RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\TrabSO2", 0, NULL,
+    resultado = RegCreateKeyEx(HKEY_CURRENT_USER, _T("Software\\TrabSO2"), 0, NULL,
         REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL);
     if (resultado != ERROR_SUCCESS) {
         _tprintf(_T("[ERRO] A abrir/criar chave no registry.\n"));
@@ -23,23 +23,23 @@ void ler_config_do_registry(EstadoJogo* estado) {
     }
 
     // Ler MAXLETRAS (não está a ser usado ainda diretamente)
-    resultado = RegQueryValueEx(hKey, "MAXLETRAS", NULL, &tipo, (LPBYTE)&valor, &tamanho);
+    resultado = RegQueryValueEx(hKey, _T("MAXLETRAS"), NULL, &tipo, (LPBYTE)&valor, &tamanho);
     if (resultado != ERROR_SUCCESS || valor > MAXLETRAS_ABS || valor <= 0) {
         valor = MAXLETRAS_PADRAO;
-        RegSetValueEx(hKey, "MAXLETRAS", 0, REG_DWORD, (BYTE*)&valor, sizeof(DWORD));
+        RegSetValueEx(hKey, _T("MAXLETRAS"), 0, REG_DWORD, (BYTE*)&valor, sizeof(DWORD));
     }
     estado->max_letras = valor;
     _tprintf(_T("MAXLETRAS (do registry): %d\n"), valor);
 
     // Ler RITMO
-    resultado = RegQueryValueEx(hKey, "RITMO", NULL, &tipo, (LPBYTE)&valor, &tamanho);
+    resultado = RegQueryValueEx(hKey, _T("RITMO"), NULL, &tipo, (LPBYTE)&valor, &tamanho);
     if (resultado == ERROR_SUCCESS && valor > 0) {
         estado->ritmo = valor;
     }
     else {
         valor = RITMO_PADRAO;
         estado->ritmo = valor;
-        RegSetValueEx(hKey, "RITMO", 0, REG_DWORD, (BYTE*)&valor, sizeof(DWORD));
+        RegSetValueEx(hKey, _T("RITMO"), 0, REG_DWORD, (BYTE*)&valor, sizeof(DWORD));
     }
     _tprintf(_T("RITMO (do registry): %d\n"), estado->ritmo);
 
@@ -108,14 +108,15 @@ DWORD WINAPI thread_letras(LPVOID param) {
 }
 
 int _tmain(int argc, LPTSTR argv[]) {
+    
     HANDLE hThread;
     EstadoJogo jogo;
 
 
-#ifdef UNICODE
-    _setmode(_fileno(stdin), _O_WTEXT);
-    _setmode(_fileno(stdout), _O_WTEXT);
-    _setmode(_fileno(stderr), _O_WTEXT);
+#ifdef UNICODE 
+    (void) _setmode(_fileno(stdin), _O_WTEXT);
+    (void)_setmode(_fileno(stdout), _O_WTEXT);
+    (void)_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
     inicializar_jogo(&jogo);
@@ -123,12 +124,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 
     hThread = CreateThread(NULL, 0, thread_letras, &jogo, 0, NULL);
     if (hThread == NULL) {
-        _tprintf(stderr, _T("Erro ao criar thread.\n"));
+        _tprintf(_T("Erro ao criar thread.\n"));
         return 1;
     }
 
     _tprintf(_T("[Arbitro] Jogo Iniciado. Pressione ENTER para sair...\n"));
-    getchar();
+    TCHAR str[40];
+    _tscanf_s(_T("%s"), str, 40);
 
     jogo.jogo_ativo = 0;
     jogo.terminar = 1;

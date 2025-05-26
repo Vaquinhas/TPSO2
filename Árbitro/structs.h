@@ -8,25 +8,25 @@
 #define MAXLETRAS_ABS 12
 
 typedef struct {
-    char nome[50];
+    TCHAR nome[50];
     float pontuacao;
-    int ativo;
+    DWORD ativo;
 } Jogador;
 
 typedef struct {
-    char letras[MAXLETRAS_ABS];
-    char usadas[MAXLETRAS_ABS];
-    int tamanho;
+    TCHAR letras[MAXLETRAS_ABS];
+    TCHAR usadas[MAXLETRAS_ABS];
+    DWORD tamanho;
 } Letras_Visiveis;
 
 typedef struct {
     Jogador jogadores[MAX_JOGADORES];
-    int num_jogadores;
+    DWORD num_jogadores;
     Letras_Visiveis letras;
-    int ritmo;
-    int max_letras;
-    int jogo_ativo;
-    int terminar;
+    DWORD ritmo;
+    DWORD max_letras;
+    DWORD jogo_ativo;
+    DWORD terminar;
 } EstadoJogo;
 
 #endif
