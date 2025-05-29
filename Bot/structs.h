@@ -2,31 +2,41 @@
 #ifndef STRUCT
 #define STRUCT
 
+#define TAM 50
 #define MAX_JOGADORES 20
 #define MAXLETRAS_PADRAO 6
 #define RITMO_PADRAO 3
 #define MAXLETRAS_ABS 12
+#define NAME_SHARED_MEMORY _T("memory")
+#define NAME_PIPE _T("\\\\.\\pipe\\teste")
+#define NAME_MUTEX _T("mutex")
+#define NAME_EVENT _T("event") //IF NEEDED
+
 
 typedef struct {
-    char nome[50];
+    TCHAR nome[TAM];
     float pontuacao;
-    int ativo;
+    HANDLE hPipe;
+    BOOL entrou, continua;
 } Jogador;
 
 typedef struct {
-    char letras[MAXLETRAS_ABS];
-    char usadas[MAXLETRAS_ABS];
-    int tamanho;
+    TCHAR letras[MAXLETRAS_ABS];
+    TCHAR usadas[MAXLETRAS_ABS];
+    DWORD tamanho;
 } Letras_Visiveis;
+
 
 typedef struct {
     Jogador jogadores[MAX_JOGADORES];
-    int num_jogadores;
-    Letras_Visiveis letras;
-    int ritmo;
-    int max_letras;
-    int jogo_ativo;
-    int terminar;
+    DWORD num_jogadores;
+    Letras_Visiveis* letras;
+    DWORD ritmo;
+    DWORD max_letras;
+    DWORD jogo_ativo;
+    DWORD terminar;
+    HANDLE hEvent, hMutex, hMapping;
+    BOOL continua;
 } EstadoJogo;
 
 #endif
