@@ -156,7 +156,7 @@ DWORD WINAPI atendeJogador(LPVOID param) {
         BOOL palavra_encontrada = FALSE;
 
         for (int i = 0; i < tamDic; i++) {
-            if (_tcscmp(buf, dicionario[i]) == 0) {
+            if (strcmp(buf, dicionario[i]) == 0) {
                 palavra_encontrada = TRUE;
                 BOOL letras_validas = TRUE;
 

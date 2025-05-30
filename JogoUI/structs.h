@@ -14,57 +14,57 @@
 
 TCHAR* dicionario[] = {
     // A
-    _T("A"), _T("ABACATE"), _T("ABERTO"), _T("ABISMO"), _T("ACORDO"), _T("ALEGRE"), _T("ALTO"),
+    _T("abacate"), _T("aberto"), _T("abismo"), _T("acordo"), _T("alegre"), _T("alto"),
     // B
-    _T("B"), _T("BALA"), _T("BARCO"), _T("BEIJO"), _T("BOLA"), _T("BRAVO"), _T("BURRO"),
+    _T("bala"), _T("barco"), _T("beijo"), _T("bola"), _T("bravo"), _T("burro"),
     // C
-    _T("C"), _T("COBRA"), _T("CAFE"), _T("CAMA"), _T("CARRO"), _T("CASA"), _T("CHUVA"),
+    _T("cabra"), _T("cafe"), _T("cama"), _T("carro"), _T("casa"), _T("chuva"),
     // D
-    _T("D"), _T("DADO"), _T("DANCA"), _T("DEDO"), _T("DENTE"), _T("DESENHO"), _T("DORMIR"),
+    _T("dado"), _T("dança"), _T("dedo"), _T("dente"), _T("desenho"), _T("dormir"),
     // E
-    _T("E"), _T("ECO"), _T("EFEITO"), _T("ELEFANTE"), _T("ELOGIO"), _T("ENCONTRO"), _T("ESTRELA"),
+    _T("eco"), _T("efeito"), _T("elefante"), _T("elogio"), _T("encontro"), _T("estrela"),
     // F
-    _T("F"), _T("FACA"), _T("FIM"), _T("FATO"), _T("FELIZ"), _T("FERRO"), _T("FOGO"),
+    _T("faca"), _T("fim"), _T("fato"), _T("feliz"), _T("ferro"), _T("fogo"),
     // G
-    _T("G"), _T("GADO"), _T("GALO"), _T("GATO"), _T("GELO"), _T("GIRAR"), _T("GROSSO"),
+    _T("gado"), _T("galo"), _T("gato"), _T("gelo"), _T("girar"), _T("grosso"),
     // H
-    _T("H"), _T("HAMBURGUER"), _T("HARMONIA"), _T("HEROI"), _T("HOJE"), _T("HOTEL"), _T("HUMANO"),
+    _T("hamburguer"), _T("harmonia"), _T("heroi"), _T("hoje"), _T("hotel"), _T("humano"),
     // I
-    _T("I"), _T("IDADE"), _T("IGREJA"), _T("ILHA"), _T("IMAGEM"), _T("IMPORTANTE"), _T("INTERIOR"),
+    _T("idade"), _T("igreja"), _T("ilha"), _T("imagem"), _T("importante"), _T("interior"),
     // J
-    _T("J"), _T("JARDIM"), _T("JATO"), _T("JOGO"), _T("JOIA"), _T("JUIZ"), _T("JUSTO"),
+    _T("jardim"), _T("jato"), _T("jogo"), _T("joia"), _T("juiz"), _T("justo"),
     // K
-    _T("K"), _T("KILO"), _T("KARATE"), _T("KIT"), _T("KIWI"), _T("KARAOKE"),
+    _T("kilo"), _T("karate"), _T("kit"), _T("kiwi"), _T("karaoke"),
     // L
-    _T("L"), _T("LAGO"), _T("LATA"), _T("LEAO"), _T("LEITE"), _T("LIVRO"), _T("LUZ"),
+    _T("lago"), _T("lata"), _T("leao"), _T("leite"), _T("livro"), _T("luz"),
     // M
-    _T("M"), _T("MACA"), _T("MALA"), _T("MAMUTE"), _T("MAPA"), _T("MAR"), _T("MESA"),
+    _T("maca"), _T("mala"), _T("mamute"), _T("mapa"), _T("mar"), _T("mesa"),
     // N
-    _T("N"), _T("NAVIO"), _T("NEVE"), _T("NOITE"), _T("NORTE"), _T("NUVEM"), _T("NUMERO"),
+    _T("navio"), _T("neve"), _T("noite"), _T("norte"), _T("nuvem"), _T("numero"),
     // O
-    _T("O"), _T("OCEANO"), _T("ORAR"), _T("ONDA"), _T("OLHO"), _T("OPCAO"), _T("OURO"),
+    _T("oceano"), _T("olho"), _T("onda"), _T("onibus"), _T("opcao"), _T("ouro"),
     // P
-    _T("P"), _T("PACO"), _T("PATO"), _T("PEDRA"), _T("PEIXE"), _T("PERTO"), _T("PINTAR"),
+    _T("paco"), _T("pato"), _T("pedra"), _T("peixe"), _T("perto"), _T("pintar"),
     // Q
-    _T("Q"), _T("QUADRO"), _T("QUENTE"), _T("QUILO"), _T("QUINTO"), _T("QUIETO"),
+    _T("quadro"), _T("quente"), _T("quilo"), _T("quinto"), _T("quieto"),
     // R
-    _T("R"), _T("RAIO"), _T("RATO"), _T("REINO"), _T("RIO"), _T("RODA"), _T("RODA"),
+    _T("raio"), _T("rato"), _T("reino"), _T("rio"), _T("roda"), _T("rosa"),
     // S
-    _T("S"), _T("SABOR"), _T("SAL"), _T("SAPATO"), _T("SELVA"), _T("SIM"), _T("SOL"),
+    _T("sabor"), _T("sal"), _T("sapato"), _T("selva"), _T("sim"), _T("sol"),
     // T
-    _T("T"), _T("TACO"), _T("TARDE"), _T("TELA"), _T("TEMPO"), _T("TERRA"), _T("TIGRE"),
+    _T("taco"), _T("tarde"), _T("tela"), _T("tempo"), _T("terra"), _T("tigre"),
     // U
-    _T("U"), _T("URSO"), _T("UVA"), _T("UNICO"), _T("URSO"), _T("URGENTE"),
+    _T("urso"), _T("uva"), _T("unico"), _T("urso"), _T("urgente"),
     // V
-    _T("V"), _T("VACA"), _T("VALOR"), _T("VENTO"), _T("VIDA"), _T("VIVO"), _T("VOZ"),
+    _T("vaca"), _T("valor"), _T("vento"), _T("vida"), _T("vivo"), _T("voz"),
     // W
-    _T("W"), _T("WATT"), _T("WEB"), _T("WIFI"), _T("WOK"), _T("WHISKY"),
+    _T("watt"), _T("web"), _T("wifi"), _T("wok"), _T("whisky"),
     // X
-    _T("X"), _T("XADREZ"), _T("XAROPE"), _T("XEROX"), _T("XILOFONE"), _T("XIS"),
+    _T("xadrez"), _T("xarope"), _T("xerox"), _T("xilofone"), _T("xis"),
     // Y
-    _T("Y"), _T("YETI"), _T("YOGA"), _T("YOYO"), _T("YAKISOBA"),
+    _T("yeti"), _T("yoga"), _T("yoyo"), _T("yakisoba"),
     // Z
-    _T("Z"), _T("ZEBRA"), _T("ZERO"), _T("ZIGZAG"), _T("ZOOLOGICO"), _T("ZANGADO")
+    _T("zebra"), _T("zero"), _T("zigzag"), _T("zoologico"), _T("zangado")
 };
 
 typedef struct {
