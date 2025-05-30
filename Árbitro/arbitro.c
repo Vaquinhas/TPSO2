@@ -46,14 +46,45 @@ void ler_config_do_registry(EstadoJogo* estado) {
     RegCloseKey(hKey);
 }
 
-
-
 TCHAR gerar_letra() {
     return _T('A') + rand() % 26;
 }
 
+BOOL palavraValidaNasLetras(TCHAR* palavra, TCHAR* letrasDisponiveis) {
+    TCHAR letrasTemp[26];
+    _tcscpy_s(letrasTemp, 26, letrasDisponiveis); // Copiar para manipular localmente
+
+    for (int i = 0; palavra[i] != _T('\0'); i++) {
+        TCHAR* ptr = _tcschr(letrasTemp, palavra[i]);
+        if (ptr == NULL) {
+            return FALSE; // Letra não existe nas disponíveis
+        }
+        *ptr = _T(' '); // Marcar como usada
+    }
+
+    return TRUE;
+}
+
 DWORD WINAPI atendeJogador(LPVOID param) {
     Jogador* jogador = (Jogador*)param;
+
+    HANDLE hMapFile = OpenFileMapping(FILE_MAP_READ, FALSE, NAME_SHARED_MEMORY);
+    if (hMapFile == NULL) {
+        _tprintf(_T("[JOGOUI] Erro ao abrir memória partilhada: (%d)\n"), GetLastError());
+
+        exit(-1);
+    }
+    Letras_Visiveis* letras_partilhadas = (Letras_Visiveis*)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, sizeof(Letras_Visiveis));
+    if (letras_partilhadas == NULL) {
+        _tprintf(_T("[JOGOUI] Erro ao mapear view of file: (%d)\n"), GetLastError());
+
+        CloseHandle(hMapFile);
+        exit(-1);
+    }
+    Letras_Visiveis letras_local;
+    CopyMemory(&letras_local, letras_partilhadas, sizeof(Letras_Visiveis));
+
+
 
     TCHAR buf[256];
     BOOL ret;
@@ -102,7 +133,7 @@ DWORD WINAPI atendeJogador(LPVOID param) {
                 ZeroMemory(&ov, sizeof(OVERLAPPED));
                 ov.hEvent = hEv;
 
-                _stprintf_s(buf, 256, _T("[ÁRBITRO] Saíste do jogo!"), jogador->pontuacao);
+                _stprintf_s(buf, 256, _T("[ÁRBITRO] Saíste do jogo!"));
 
                 ret = WriteFile(jogador->hPipe, buf, (DWORD)_tcslen(buf) * sizeof(TCHAR), &n, &ov);
                 if (!ret && GetLastError() != ERROR_IO_PENDING) { //End Of File
@@ -118,6 +149,49 @@ DWORD WINAPI atendeJogador(LPVOID param) {
             }
             continue;
         }
+
+        BOOL sim = FALSE, aux = FALSE;
+
+        int tamDic = sizeof(dicionario) / sizeof(dicionario[0]);
+        BOOL palavra_encontrada = FALSE;
+
+        for (int i = 0; i < tamDic; i++) {
+            if (strcmp(buf, dicionario[i]) == 0) {
+                palavra_encontrada = TRUE;
+                BOOL letras_validas = TRUE;
+
+                for (int j = 0; j < _tcslen(buf); j++) {
+                    BOOL letra_encontrada = FALSE;
+                    for (int k = 0; k < MAXLETRAS_PADRAO; k++) {
+                        if (buf[j] == letras_local.letras[k]) {
+                            letra_encontrada = TRUE;
+                            break;
+                        }
+                    }
+                    if (!letra_encontrada) {
+                        letras_validas = FALSE;
+                        break;
+                    }
+                }
+
+                if (letras_validas) {
+                    _stprintf_s(buf, 256, _T("[ÁRBITRO] Palavra certa boa! "));
+                    jogador->pontuacao += 1;
+                }
+                else {
+                    _stprintf_s(buf, 256, _T("[ÁRBITRO] Palavra errada (letras inválidas)"));
+                    jogador->pontuacao -= 0.5;
+                }
+                break; // já encontraste a palavra, não precisas continuar a procurar
+            }
+        }
+
+        // Se a palavra não estiver no dicionário
+        if (!palavra_encontrada) {
+            _stprintf_s(buf, 256, _T("[ÁRBITRO] Palavra errada (não está no dicionário)"));
+            jogador->pontuacao -= 0.5;
+        }
+
 
 
         ZeroMemory(&ov, sizeof(OVERLAPPED));
@@ -181,10 +255,95 @@ DWORD WINAPI thread_letras(LPVOID param) {
     ExitThread(1);
 }
 
+DWORD WINAPI thread_teclado(LPVOID param) {
+    EstadoJogo* jogo = (EstadoJogo*)param;
+    TCHAR buf[256], aux[50];
 
+    while (1) {
+        _fgetts(buf, 256, stdin);
+        buf[_tcslen(buf) - 1] = _T('\0');
+
+        if (_tcscmp(buf, _T("acelerar")) == 0) {
+            _tprintf(_T("Acelerando o jogo"));
+            if (jogo->ritmo > 1)
+                jogo->ritmo--;
+        }
+        else if (_tcscmp(buf, _T("travar")) == 0) {
+            _tprintf(_T("Travar o jogo"));
+            jogo->ritmo++;
+        }
+        else if (_tcscmp(buf, _T("listar")) == 0) {
+            _tprintf(_T("Jogadores: \n"));
+            for (int i = 0; i < MAX_JOGADORES; i++) {
+                _tprintf(_T("%s"), jogo->jogadores[i].nome);
+            }
+        }
+        else if (_tcsncmp(buf, _T("excluir "), 8) == 0) {
+            TCHAR* nomeExcluir = buf + 8;
+            BOOL encontrado = FALSE;
+
+            WaitForSingleObject(jogo->hMutex, INFINITE);
+            for (int i = 0; i < MAX_JOGADORES; i++) {
+                if (jogo->jogadores[i].hPipe != NULL && _tcscmp(jogo->jogadores[i].nome, nomeExcluir) == 0) {
+                    _tprintf(_T("[ÁRBITRO] Jogador %s será excluído.\n"), jogo->jogadores[i].nome);
+                    TCHAR msg[] = _T("Foste excluído\n");
+                    DWORD escritos;
+                    WriteFile(jogo->jogadores[i].hPipe, msg, (DWORD)(_tcslen(msg) * sizeof(TCHAR)), &escritos, NULL);
+
+                    // Fechar o pipe
+                    CloseHandle(jogo->jogadores[i].hPipe);
+                    jogo->jogadores[i].hPipe = NULL;
+
+                    // Limpar nome e pontuação
+                    ZeroMemory(jogo->jogadores[i].nome, sizeof(jogo->jogadores[i].nome));
+                    jogo->jogadores[i].pontuacao = 0;
+
+                    encontrado = TRUE;
+                    break;
+                }
+            }
+            ReleaseMutex(jogo->hMutex);
+
+            if (!encontrado) {
+                _tprintf(_T("[ÁRBITRO] Jogador '%s' não encontrado.\n"), nomeExcluir);
+            }
+        }
+        else if (_tcscmp(buf, _T("encerrar")) == 0) {
+            _tprintf(_T("[ÁRBITRO] Encerrando o jogo e todos os jogadores...\n"));
+
+            WaitForSingleObject(jogo->hMutex, INFINITE);
+            for (int i = 0; i < MAX_JOGADORES; i++) {
+                if (jogo->jogadores[i].hPipe != NULL) {
+                    // Opcional: enviar mensagem de encerramento ao jogador
+                    DWORD escritos;
+                    TCHAR msg[] = _T("O jogo foi encerrado pelo árbitro.\n");
+                    WriteFile(jogo->jogadores[i].hPipe, msg, (DWORD)(_tcslen(msg) * sizeof(TCHAR)), &escritos, NULL);
+
+                    // Fecha o pipe
+                    CloseHandle(jogo->jogadores[i].hPipe);
+                    jogo->jogadores[i].hPipe = NULL;
+                }
+
+                // Limpa os dados do jogador
+                ZeroMemory(jogo->jogadores[i].nome, sizeof(jogo->jogadores[i].nome));
+                jogo->jogadores[i].pontuacao = 0;
+            }
+
+            // Sinaliza que o jogo terminou (assumindo que tens esta variável)
+            jogo->continua = FALSE;
+
+            ReleaseMutex(jogo->hMutex);
+
+            _tprintf(_T("[ÁRBITRO] Jogo encerrado com sucesso.\n"));
+        }
+    }
+
+
+    ExitThread(1);
+}
 
 int _tmain(int argc, LPTSTR argv[]) {
-    HANDLE hThreadLetras, hThreadPipe, hPipe, hThreadJogador;
+    HANDLE hThreadLetras, hThreadPipe, hPipe, hThreadJogador, hThreadTeclado;
     EstadoJogo jogo;
     Jogador jogador;
     TCHAR buf[256];
@@ -247,6 +406,8 @@ int _tmain(int argc, LPTSTR argv[]) {
         CloseHandle(jogo.hMutex);
         exit(-1);
     }
+
+    hThreadTeclado = CreateThread(NULL, 0, thread_teclado, &jogo, 0, NULL);
 
     do {
         temp = TRUE;

@@ -52,10 +52,7 @@ DWORD WINAPI gerePipes(LPVOID param) {
                 GetOverlappedResult(jogador->hPipe, &ov, &n, FALSE); //Obter res
             }
 
-
             buf[n / sizeof(TCHAR)] = _T('\0');
-
-
 
             if (_tcscmp(buf, _T("bruh")) == 0) {
                 _tprintf(_T("[JOGOUI] Esse nome já existe!\n"));
@@ -66,7 +63,6 @@ DWORD WINAPI gerePipes(LPVOID param) {
             _tprintf(_T("[JOGOUI] Boa Sorte! Já podes começar a digitar\n"));
             jogador->entrou = TRUE;
         }
-
 
         _fgetts(buf, 256, stdin);
         buf[_tcslen(buf) - 1] = _T('\0');
@@ -86,8 +82,6 @@ DWORD WINAPI gerePipes(LPVOID param) {
 
         ZeroMemory(&ov, sizeof(OVERLAPPED));
         ov.hEvent = hEv;
-
-
 
         ret = ReadFile(jogador->hPipe, buf, sizeof(buf), &n, &ov);
         if (!ret && GetLastError() != ERROR_IO_PENDING) { //End Of File
